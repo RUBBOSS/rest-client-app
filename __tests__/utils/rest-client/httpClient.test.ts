@@ -5,7 +5,13 @@ global.fetch = jest.fn();
 
 global.TextEncoder = class {
   encode() {
-    return { length: 10 };
+    return new Uint8Array(10);
+  }
+  encodeInto(source: string, destination: Uint8Array) {
+    return { read: source.length, written: destination.length };
+  }
+  get encoding() {
+    return 'utf-8';
   }
 };
 

@@ -12,7 +12,15 @@ jest.mock('sonner', () => ({
 const mockSelectOnValueChange = jest.fn();
 jest.mock('@/components/ui/select', () => {
   return {
-    Select: ({ children, onValueChange, value }) => {
+    Select: ({
+      children,
+      onValueChange,
+      value,
+    }: {
+      children: React.ReactNode;
+      onValueChange?: (value: string) => void;
+      value?: string;
+    }) => {
       React.useEffect(() => {
         if (onValueChange) {
           mockSelectOnValueChange.mockImplementation((val) => onValueChange(val));
@@ -24,7 +32,7 @@ jest.mock('@/components/ui/select', () => {
         </div>
       );
     },
-    SelectTrigger: ({ className, children }) => (
+    SelectTrigger: ({ className, children }: { className?: string; children: React.ReactNode }) => (
       <button
         role='combobox'
         aria-controls='radix-:r0:'
@@ -34,9 +42,9 @@ jest.mock('@/components/ui/select', () => {
         {children}
       </button>
     ),
-    SelectValue: ({ children }) => <span>{children}</span>,
-    SelectContent: ({ children }) => <div>{children}</div>,
-    SelectItem: ({ children }) => <div>{children}</div>,
+    SelectValue: ({ children }: { children: React.ReactNode }) => <span>{children}</span>,
+    SelectContent: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+    SelectItem: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   };
 });
 
