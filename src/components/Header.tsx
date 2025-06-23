@@ -87,25 +87,37 @@ export function Header() {
             <nav className='flex items-center space-x-6 text-sm font-medium'>
               <Link
                 href={homePath()}
-                className='transition-colors hover:text-foreground/80 text-foreground'
+                className={cn(
+                  'transition-colors hover:text-foreground/80',
+                  pathname === homePath() ? 'text-foreground' : 'text-foreground/60'
+                )}
               >
                 {t('nav.home')}
               </Link>
               <Link
                 href={restClientPath()}
-                className='transition-colors hover:text-foreground/80 text-foreground/60'
+                className={cn(
+                  'transition-colors hover:text-foreground/80',
+                  pathname === restClientPath() ? 'text-foreground' : 'text-foreground/60'
+                )}
               >
                 {t('nav.restClient')}
               </Link>
               <Link
                 href={variablesPath()}
-                className='transition-colors hover:text-foreground/80 text-foreground/60'
+                className={cn(
+                  'transition-colors hover:text-foreground/80',
+                  pathname === variablesPath() ? 'text-foreground' : 'text-foreground/60'
+                )}
               >
                 {t('nav.variables')}
               </Link>
               <Link
                 href={historyPath()}
-                className='transition-colors hover:text-foreground/80 text-foreground/60'
+                className={cn(
+                  'transition-colors hover:text-foreground/80',
+                  pathname === historyPath() ? 'text-foreground' : 'text-foreground/60'
+                )}
               >
                 {t('nav.history')}
               </Link>
