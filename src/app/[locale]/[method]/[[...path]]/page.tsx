@@ -55,9 +55,21 @@ function isValidUrl(urlSegment: string): boolean {
     return true;
   }
 
-  // If it's just random alphabetic characters without URL structure, consider it invalid
-  // But only if it's longer than 8 chars and contains no numbers or special chars
-  if (/^[a-zA-Z]+$/.test(urlSegment) && urlSegment.length > 8 && !/[0-9\-_]/.test(urlSegment)) {
+  return true;
+}
+
+function isValidEncodedUrl(encodedSegment: string): boolean {
+  // Check if the segment looks like a properly encoded URL
+  // If it's just random characters without proper encoding structure, reject it
+
+  // Check if it looks like base64 (only contains valid base64 characters)
+  const base64Pattern = /^[A-Za-z0-9\-_]+$/;
+  if (!base64Pattern.test(encodedSegment)) {
+    return false;
+  }
+
+  // If it's just a few random letters (likely not a real encoded URL), reject it
+  if (/^[a-zA-Z]{3,8}$/.test(encodedSegment)) {
     return false;
   }
 
@@ -90,7 +102,12 @@ export default async function RestClientPage({
     if (path.length >= 1) {
       initialEncodedUrl = path[0];
 
-      // Validate if the URL segment looks valid
+      // First validate if the encoded segment looks valid
+      if (!isValidEncodedUrl(initialEncodedUrl)) {
+        notFound();
+      }
+
+      // Then try to decode and validate the decoded URL
       try {
         const decodedUrl = decodeSegment(initialEncodedUrl);
         if (!isValidUrl(decodedUrl)) {

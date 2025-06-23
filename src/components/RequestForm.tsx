@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { hasVariables } from '@/utils/variables/variableSubstitution';
 import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 
@@ -108,16 +109,15 @@ export default function RequestForm({
             <SelectItem value='OPTIONS'>OPTIONS</SelectItem>
             <SelectItem value='HEAD'>HEAD</SelectItem>
           </SelectContent>
-        </Select>
+        </Select>{' '}
         <Input
-          type='url'
+          type='text'
           placeholder={t('RequestForm.urlPlaceholder')}
           className='flex-1'
           value={url}
           onChange={(e) => setUrl(e.target.value)}
-          required
-        />
-        <Button type='submit' disabled={loading || !url}>
+        />{' '}
+        <Button type='submit' disabled={loading || (!url.trim() && !hasVariables(url))}>
           {loading ? t('RequestForm.sendingButton') : t('RequestForm.sendButton')}
         </Button>
       </div>
