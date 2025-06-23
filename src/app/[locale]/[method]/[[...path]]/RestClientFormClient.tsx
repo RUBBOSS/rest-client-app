@@ -16,7 +16,6 @@ import {
   processUrl,
 } from '@/utils/variables/variableSubstitution';
 import { useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 type RestClientFormClientProps = {
@@ -35,7 +34,6 @@ export default function RestClientFormClient({
   initialHeaders,
 }: RestClientFormClientProps) {
   const t = useTranslations();
-  const router = useRouter();
 
   const [url, setUrl] = useState(initialUrl);
   const [method, setMethod] = useState(initialMethod);
