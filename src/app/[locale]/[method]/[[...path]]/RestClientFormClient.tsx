@@ -16,6 +16,7 @@ import {
   processUrl,
 } from '@/utils/variables/variableSubstitution';
 import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 type RestClientFormClientProps = {
@@ -34,6 +35,7 @@ export default function RestClientFormClient({
   initialHeaders,
 }: RestClientFormClientProps) {
   const t = useTranslations();
+  const router = useRouter();
 
   const [url, setUrl] = useState(initialUrl);
   const [method, setMethod] = useState(initialMethod);
@@ -56,6 +58,20 @@ export default function RestClientFormClient({
     };
     checkForVariables();
   }, [url, requestBody, headers]);
+
+  // Update URL when method changes
+  useEffect(() => {
+    if (method !== initialMethod) {
+      const currentPath = window.location.pathname;
+      const pathSegments = currentPath.split('/');
+      // Replace the method segment (should be at index 2: /[locale]/[method]/...)
+      if (pathSegments.length >= 3) {
+        pathSegments[2] = method.toLowerCase();
+        const newPath = pathSegments.join('/');
+        window.history.replaceState({}, '', newPath);
+      }
+    }
+  }, [method, initialMethod]);
 
   const {
     selectedLanguage: selectedCodeLanguage,
@@ -174,6 +190,20 @@ export default function RestClientFormClient({
     },
     [url, method, headers, contentType, requestBody, locale, usingVariables, t]
   );
+
+  // Update URL when method changes
+  useEffect(() => {
+    if (method !== initialMethod) {
+      const currentPath = window.location.pathname;
+      const pathSegments = currentPath.split('/');
+      // Replace the method segment (should be at index 2: /[locale]/[method]/...)
+      if (pathSegments.length >= 3) {
+        pathSegments[2] = method.toLowerCase();
+        const newPath = pathSegments.join('/');
+        window.history.replaceState({}, '', newPath);
+      }
+    }
+  }, [method, initialMethod]);
 
   return (
     <div className='min-h-screen p-4 max-w-5xl mx-auto'>
