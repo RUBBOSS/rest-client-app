@@ -1,8 +1,7 @@
-import { nonFoundPath } from '@/paths';
 import { Header } from '@/types/types';
 import { decodeSegment } from '@/utils/rest-client/urlEncoder';
 import { setRequestLocale } from 'next-intl/server';
-import { redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 
 import RestClientFormClient from './RestClientFormClient';
 
@@ -26,6 +25,45 @@ function checkMethodValidity(method?: string): boolean {
   );
 }
 
+function isValidUrl(urlSegment: string): boolean {
+  // If the segment looks like a random string (no dots, no protocols, just random chars)
+  // and is not a valid URL pattern, consider it invalid
+  if (!urlSegment) return false;
+
+  // Allow URLs that start with http/https
+  if (urlSegment.startsWith('http://') || urlSegment.startsWith('https://')) {
+    return true;
+  }
+
+  // Allow URLs that look like domains (contain dots)
+  if (urlSegment.includes('.')) {
+    return true;
+  }
+
+  // Allow localhost patterns
+  if (urlSegment.startsWith('localhost')) {
+    return true;
+  }
+
+  // Allow IP patterns (simple check)
+  if (/^\d+\.\d+\.\d+\.\d+/.test(urlSegment)) {
+    return true;
+  }
+
+  // Allow paths that start with /
+  if (urlSegment.startsWith('/')) {
+    return true;
+  }
+
+  // If it's just random alphabetic characters without URL structure, consider it invalid
+  // But only if it's longer than 8 chars and contains no numbers or special chars
+  if (/^[a-zA-Z]+$/.test(urlSegment) && urlSegment.length > 8 && !/[0-9\-_]/.test(urlSegment)) {
+    return false;
+  }
+
+  return true;
+}
+
 export default async function RestClientPage({
   params: paramsPromise,
   searchParams: searchParamsPromise,
@@ -42,7 +80,7 @@ export default async function RestClientPage({
   setRequestLocale(locale);
 
   if (!checkMethodValidity(initialMethod)) {
-    redirect(nonFoundPath());
+    notFound();
   }
 
   let initialEncodedUrl: string | undefined = undefined;
@@ -51,6 +89,17 @@ export default async function RestClientPage({
   if (path) {
     if (path.length >= 1) {
       initialEncodedUrl = path[0];
+
+      // Validate if the URL segment looks valid
+      try {
+        const decodedUrl = decodeSegment(initialEncodedUrl);
+        if (!isValidUrl(decodedUrl)) {
+          notFound();
+        }
+      } catch {
+        // If decoding fails, it's likely an invalid URL
+        notFound();
+      }
     }
     if (path.length >= 2 && ['POST', 'PUT', 'PATCH'].includes(initialMethod)) {
       initialEncodedBody = path[1];
