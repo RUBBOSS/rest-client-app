@@ -36,7 +36,7 @@ export default function RestClientFormClient({
   const t = useTranslations();
 
   const [url, setUrl] = useState(initialUrl);
-  const [method, setMethod] = useState(initialMethod);
+  const [method, setMethod] = useState(initialMethod.toUpperCase());
   const [requestBody, setRequestBody] = useState(initialBody);
   const [headers, setHeaders] = useState<Header[]>(initialHeaders);
   const [responseData, setResponseData] = useState<ResponseData | null>(null);
@@ -57,19 +57,28 @@ export default function RestClientFormClient({
     checkForVariables();
   }, [url, requestBody, headers]);
 
+  // Wrapper function to ensure method is always uppercase
+  const handleSetMethod = (newMethod: string) => {
+    setMethod(newMethod.toUpperCase());
+  };
+
   // Update URL when method changes
   useEffect(() => {
-    if (method !== initialMethod) {
-      const currentPath = window.location.pathname;
-      const pathSegments = currentPath.split('/');
-      // Replace the method segment (should be at index 2: /[locale]/[method]/...)
-      if (pathSegments.length >= 3) {
-        pathSegments[2] = method.toLowerCase();
+    const currentPath = window.location.pathname;
+    const pathSegments = currentPath.split('/');
+    // Replace the method segment (should be at index 2: /[locale]/[method]/...)
+    if (pathSegments.length >= 3) {
+      const currentMethodInUrl = pathSegments[2].toUpperCase();
+      const newMethodInUrl = method.toUpperCase();
+
+      // Only update if the method in URL is different from current method
+      if (currentMethodInUrl !== newMethodInUrl) {
+        pathSegments[2] = method.toUpperCase();
         const newPath = pathSegments.join('/');
         window.history.replaceState({}, '', newPath);
       }
     }
-  }, [method, initialMethod]);
+  }, [method]);
 
   const {
     selectedLanguage: selectedCodeLanguage,
@@ -237,7 +246,7 @@ export default function RestClientFormClient({
         url={url}
         setUrl={setUrl}
         method={method}
-        setMethod={setMethod}
+        setMethod={handleSetMethod}
         headers={headers}
         setHeaders={setHeaders}
         requestBody={requestBody}

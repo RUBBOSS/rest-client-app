@@ -214,5 +214,31 @@ describe('Header Component', () => {
     expect(screen.getByRole('link', { name: 'signIn' })).toBeInTheDocument();
   });
 
+  it('should highlight REST Client nav link when on REST client routes', () => {
+    // Test for GET method route with locale prefix
+    mockUsePathname.mockReturnValue('/en/GET/https%3A%2F%2Fapi.example.com%2Fusers');
+    const { unmount: unmount1 } = renderHeader({ isAuthenticated: true, isLoading: false });
+
+    const restClientLink = screen.getByRole('link', { name: 'restClient' });
+    expect(restClientLink).toHaveClass('text-foreground');
+    unmount1();
+
+    // Test for POST method route with locale prefix
+    mockUsePathname.mockReturnValue('/ru/POST/https%3A%2F%2Fapi.example.com%2Fusers');
+    const { unmount: unmount2 } = renderHeader({ isAuthenticated: true, isLoading: false });
+
+    const restClientLinkPost = screen.getByRole('link', { name: 'restClient' });
+    expect(restClientLinkPost).toHaveClass('text-foreground');
+    unmount2();
+
+    // Test for non-REST client route
+    mockUsePathname.mockReturnValue('/en/history');
+    const { unmount: unmount3 } = renderHeader({ isAuthenticated: true, isLoading: false });
+
+    const restClientLinkHistory = screen.getByRole('link', { name: 'restClient' });
+    expect(restClientLinkHistory).toHaveClass('text-foreground/60');
+    unmount3();
+  });
+
   // Add more tests as needed, e.g., for scroll behavior if crucial
 });

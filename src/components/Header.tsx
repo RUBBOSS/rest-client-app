@@ -64,6 +64,17 @@ export function Header() {
 
   const isLoading = isAuthLoading || isLocaleLoading;
 
+  // Check if current path is a REST client route (accounting for locale prefix)
+  const isRestClientRoute = () => {
+    const pathSegments = pathname.split('/');
+    // URL structure: /{locale}/{method}/... (e.g., /en/GET/...)
+    if (pathSegments.length >= 3) {
+      const method = pathSegments[2].toUpperCase();
+      return ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'].includes(method);
+    }
+    return false;
+  };
+
   return (
     <header
       className={cn(
@@ -98,7 +109,7 @@ export function Header() {
                 href={restClientPath()}
                 className={cn(
                   'transition-colors hover:text-foreground/80',
-                  pathname === restClientPath() ? 'text-foreground' : 'text-foreground/60'
+                  isRestClientRoute() ? 'text-foreground' : 'text-foreground/60'
                 )}
               >
                 {t('nav.restClient')}
